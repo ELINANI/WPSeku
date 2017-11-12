@@ -10,3 +10,8 @@ $ cd wpseku
 $ pip install -r requirements.txt
 $ python wpseku.py
 ```
+## Usage
+`python wpseku.py --target http://site.com --ragent`
+
+![screen_2](https://raw.githubusercontent.com/m4ll0k/WPSeku/master/screen/screen_2.png)
+![screen_3](https://raw.githubusercontent.com/m4ll0k/WPSeku/master/screen/screen_3.png)
