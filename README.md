@@ -18,3 +18,4 @@ $ python wpseku.py
 
 ## Credits and Contributors
 Original idea and script from WPScan Team (https://wpscan.org/)
+WPScan Vulnerability Database (https://wpvulndb.com/api) 
