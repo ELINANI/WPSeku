@@ -15,3 +15,6 @@ $ python wpseku.py
 
 ![screen_2](https://raw.githubusercontent.com/m4ll0k/WPSeku/master/screen/screen_2.png)
 ![screen_3](https://raw.githubusercontent.com/m4ll0k/WPSeku/master/screen/screen_3.png)
+
+## Credits and Contributors
+Original idea and script from WPScan Team (https://wpscan.org/)
