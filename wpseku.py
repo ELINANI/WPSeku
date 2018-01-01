@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#!/usr/bin/env python2
 # -*- Coding: UTF-8 -*-
 #
 # WPSeku: Wordpress Security Scanner
@@ -20,14 +20,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # Add path to seft.target
 
-import os
-import sys
-import time
-import getopt
-
-from lib import wphttp
-from lib import wpcolor
-from lib import wpprint
+import os, sys, time, getopt
+from lib import wphttp, wpcolor, wpprint
 
 from urlparse import urlsplit
 from modules.fingerprint import fingerprint
