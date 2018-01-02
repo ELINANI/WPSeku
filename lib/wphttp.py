@@ -82,7 +82,7 @@ class wphttp(object):
 			h['user-agent'] = self.agent
 		# request
 		request = requests.Session()
-		req = urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+		req = requests.packages.urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 		# get
 		if m.lower()=='get':
 			if p: u='{}'.format(Request.ucheck.payload(u,p))
