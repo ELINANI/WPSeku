@@ -12,10 +12,9 @@ from lib import wphttp
 from lib import wpprint
 
 class wpusers:
-	
-	chk = wphttp.UCheck() 
+	chk = wphttp.UCheck()
 	out = wpprint.wpprint()
-	
+
 	def __init__(self,agent,proxy,redir,time,url,cookie):
 		self.url = url
 		self.cookie = cookie
@@ -23,27 +22,42 @@ class wpusers:
 			agent=agent,proxy=proxy,
 			redir=redir,time=time
 			)
-	
+
 	def run(self):
 		wpusers.out.test('Enumerate users..')
 		users = []
 		df_users = []
-		for x in range(0,15):
-			path = "/?author={}".format(str(x))
-			try:
-				url = wpusers.chk.path(self.url,path)
-				resp = self.req.send(url,c=self.cookie)
-				if resp.status_code == 200:
-					author = re.findall(r'/author/(.+?)/',resp.content)
-					if len(author) == 1:
-						if author[0] not in df_users:
-							df_users.append(author[0])
-					elif len(author) > 1:
-						for i in author:
-							if i[0] not in df_users:
+
+		# Get the wordpress version number from fingerprinting
+		try:
+			url = wpusers.chk.path(self.url, "/wp-json/wp/v2/users")
+			resp = self.req.send(url,c=self.cookie)
+			if resp.status_code == 200:
+				authors = resp.json()
+				for author in authors:
+					df_users.insert(author['id'], author['slug'])
+			else:
+				raise Exception('WordPress REST API not enabled.')
+
+		# Use the normal enumeration method
+		except Exception, e:
+			for x in range(1,15):
+				path = "/?author={}".format(str(x))
+				try:
+					url = wpusers.chk.path(self.url,path)
+					resp = self.req.send(url,c=self.cookie)
+					if resp.status_code == 200:
+						author = re.findall(r'/author/(.+?)/',resp.content)
+						if len(author) == 1:
+							if author[0] not in df_users:
 								df_users.append(author[0])
-			except Exception,e:
-				pass
+						elif len(author) > 1:
+							for i in author:
+								if i[0] not in df_users:
+									df_users.append(author[0])
+				except Exception,e:
+					pass
+
 		for i in df_users:
 			if i not in users:
 				users.append(i)
