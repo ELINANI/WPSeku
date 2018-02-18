@@ -102,7 +102,7 @@ class WPSeku(object):
 			if opt in ('-a','--agent'):
 				self.agent = arg
 			if opt in ('-r','--ragent'):
-				pass
+				self.agent = 'random'
 			if opt in ('-m','--timeout'):
 				self.timeout = arg
 			if opt in ('-f','--redirect'):

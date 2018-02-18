@@ -10,6 +10,7 @@ import sys
 import random
 import urllib3
 import requests
+from fake_useragent import UserAgent
 
 class UCheck:
 	def payload(self,url,payload):
@@ -48,8 +49,28 @@ class UCheck:
 
 class wphttp(object):
 	ucheck = UCheck()
+
+	'''
+	'	Imprved using a  local user-agent to avod  to copypasta 
+	'	the whole string of user-agent
+	'
+	'''
+
 	def __init__(self,**k):
-		self.agent = None if "agent" not in k else k["agent"]
+		#self.agent = None if "agent" not in k else k["agent"]
+		if "agent" not in k:
+			self.agent = None
+		else:
+			ua = UserAgent()
+			if k["agent"] == "random":
+					self.agent = str(ua.random)
+					#print self.agent
+			else:
+				try:
+					self.agent = str(ua[str(k["agent"])])
+				except:
+					self.agent = None
+
 		self.proxy = None if "proxy" not in k else k["proxy"]
 		self.redir = True if "redir" not in k else k["redir"]
 		self.time  = None if "time"  not in k else k["time" ]

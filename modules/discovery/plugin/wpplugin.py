@@ -71,7 +71,7 @@ class wpplugin:
 				if resp.status_code == 200 and resp.content != None:
 					if resp.url == url:
 						wpplugin.out.more('Changelog: {}'.format(resp.url))
-						exit()
+						#exit()
 		except Exception,e:
 			pass
 
@@ -89,7 +89,7 @@ class wpplugin:
 					if resp.url == url:
 						if re.search('Fatal error',resp.content):
 							wpplugin.out.more('Full Path Disclosure: {}'.format(resp.url))
-							exit()
+							#exit()
 		except Exception,e:
 			pass
 
@@ -103,7 +103,7 @@ class wpplugin:
 				if resp.status_code == 200 and resp.content != None:
 					if resp.url == url:
 						wpplugin.out.more('License: {}'.format(resp.url))
-						exit()
+						#exit()
 		except Exception,e:
 			pass
 
@@ -133,7 +133,7 @@ class wpplugin:
 				if resp.status_code == 200 and resp.content != None:
 					if resp.url == url:
 						wpplugin.out.more('Readme: {}'.format(resp.url))
-						exit()
+						#exit()
 		except Exception,e:
 			pass
 
