@@ -14,7 +14,7 @@ from fake_useragent import UserAgent
 
 class UCheck:
 	def payload(self,url,payload):
-		
+
 		if url.endswith('/') & payload.startswith('/'):
 			return str(url[:-1]+"?"+payload[1:])
 
@@ -28,19 +28,19 @@ class UCheck:
 			return str(url+"?"+payload)
 
 	def path(self,url,path):
-		
+
 		if url.endswith('/') & path.startswith('/'):
 			if not path.endswith('/'):
 				return str(url[:-1]+path)
 			else:
 				return str(url+path[:-1])
-		
+
 		elif not url.endswith('/') and not path.startswith('/'):
 			if not path.endswith('/'):
 				return str(url+"/"+path)
 			else:
 				return str(url+"/"+path[:-1])
-		
+
 		else:
 			if not path.endswith('/'):
 				return str(url+path)
@@ -49,25 +49,17 @@ class UCheck:
 
 class wphttp(object):
 	ucheck = UCheck()
-
-	'''
-	'	Imprved using a  local user-agent to avod  to copypasta 
-	'	the whole string of user-agent
-	'
-	'''
+	ua = UserAgent()
 
 	def __init__(self,**k):
-		#self.agent = None if "agent" not in k else k["agent"]
 		if "agent" not in k:
 			self.agent = None
 		else:
-			ua = UserAgent()
 			if k["agent"] == "random":
-					self.agent = str(ua.random)
-					#print self.agent
+					self.agent = self.ragent()
 			else:
 				try:
-					self.agent = str(ua[str(k["agent"])])
+					self.agent = str(self.ua[str(k["agent"])])
 				except:
 					self.agent = None
 
@@ -76,22 +68,7 @@ class wphttp(object):
 		self.time  = None if "time"  not in k else k["time" ]
 
 	def ragent(self):
-		ag = (
-			'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',
-			'Opera/9.80 (X11; Linux i686; Ubuntu/14.10) Presto/2.12.388 Version/12.16',
-			'Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US',
-			'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001)',
-			'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0',
-			'Mozilla/5.0 (Windows NT 5.1; rv:13.0) Gecko/20100101 Firefox/13.0.1',
-			'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0',
-			'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; .NET CLR 1.0.3705)',
-			'Mozilla/5.0 (Windows NT 5.1; rv:13.0) Gecko/20100101 Firefox/13.0.1',
-			'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)',
-			'Opera/9.80 (Windows NT 5.1; U; en) Presto/2.10.289 Version/12.01',
-			'Mozilla/5.0 (Windows NT 5.1; rv:5.0.1) Gecko/20100101 Firefox/5.0.1',
-			'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko'
-			)
-		return str(ag[random.randint(0,len(ag)-1)])
+		return str(self.ua.random)
 
 	def send(self,u,m="GET",p=None,h=None,c=None):
 		if p is None : p = {}

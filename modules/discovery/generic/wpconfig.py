@@ -46,6 +46,6 @@ class wpconfig:
 				if resp.status_code == 200 and resp._content != None:
 					if resp.url == url:
 						wpconfig.out.plus('wp-config backup available under: {}'.format(resp.url))
-						exit()
+						break
 		except Exception,e:
 			pass

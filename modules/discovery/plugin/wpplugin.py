@@ -14,18 +14,20 @@ from lib import wphttp
 from lib import wpprint
 
 class wpplugin:
-	
-	chk = wphttp.UCheck() 
+
+	chk = wphttp.UCheck()
 	out = wpprint.wpprint()
-	
-	def __init__(self,agent,proxy,redir,time,url,cookie):
+
+	def __init__(self,agent,proxy,redir,time,url,cookie,result):
 		self.url = url
+		self.result = result
 		self.cookie = cookie
 		self.agent = agent
 		self.req = wphttp.wphttp(
 			agent=agent,proxy=proxy,
 			redir=redir,time=time
 			)
+
 	def run(self):
 		wpplugin.out.test('Passive enumerate plugins..')
 		try:
@@ -33,35 +35,44 @@ class wpplugin:
 			resp = self.req.send(url,c=self.cookie)
 			plugins = re.findall(r'/wp-content/plugins/(.+?)/',resp.content)
 			plugin = []
+			self.result.plugins = []
+
 			for pl in plugins:
 				if pl not in plugin:
 					plugin.append(pl)
+
 			if plugin != []:
 				if len(plugin) == 1:
 					wpplugin.out.plus('Name: {}'.format(plugin[0]))
-					self.changelog(plugin[0])
+					obj = type('', (), {})()
+					obj.name = plugin[0]
+					self.changelog(plugin[0], obj)
 					self.fullpathdisc(plugin[0])
 					self.license(plugin[0])
 					self.listing(plugin[0])
-					self.readme(plugin[0])
-					self.dbwpscan(plugin[0])
+					self.readme(plugin[0], obj)
+					self.dbwpscan(plugin[0], obj)
+					self.result.plugins.append(vars(obj))
 
 				elif len(plugin) > 1:
 					for pl in plugin:
 						wpplugin.out.plus('Name: {}'.format(pl))
-						self.changelog(pl)
+						obj = type('', (), {})()
+						obj.name = pl
+						self.changelog(pl, obj)
 						self.fullpathdisc(pl)
 						self.license(pl)
 						self.listing(pl)
-						self.readme(pl)
-						self.dbwpscan(pl)
+						self.readme(pl, obj)
+						self.dbwpscan(pl, obj)
+						self.result.plugins.append(vars(obj))
 
-			elif themes == None:
-				wpplugin.out.warning('Not found themes..')
+			else:
+				wpplugin.out.warning('Not found plugins..')
 		except Exception,e:
 			pass
 
-	def changelog(self,plugin):
+	def changelog(self,plugin,obj):
 		try:
 			ch = ['changelog.txt','changelog.md','CHANGELOG.txt','CHANGELOG.md']
 			for pt in ch:
@@ -70,8 +81,9 @@ class wpplugin:
 				resp = self.req.send(url,c=self.cookie)
 				if resp.status_code == 200 and resp.content != None:
 					if resp.url == url:
+						obj.changelog = resp.url
 						wpplugin.out.more('Changelog: {}'.format(resp.url))
-						#exit()
+						break
 		except Exception,e:
 			pass
 
@@ -89,7 +101,7 @@ class wpplugin:
 					if resp.url == url:
 						if re.search('Fatal error',resp.content):
 							wpplugin.out.more('Full Path Disclosure: {}'.format(resp.url))
-							#exit()
+							break
 		except Exception,e:
 			pass
 
@@ -103,7 +115,7 @@ class wpplugin:
 				if resp.status_code == 200 and resp.content != None:
 					if resp.url == url:
 						wpplugin.out.more('License: {}'.format(resp.url))
-						#exit()
+						break
 		except Exception,e:
 			pass
 
@@ -123,7 +135,7 @@ class wpplugin:
 		except Exception,e:
 			pass
 
-	def readme(self,plugin):
+	def readme(self,plugin,obj):
 		try:
 			ch = ['readme.txt','readme.md','README.md','README.txt']
 			for pt in ch:
@@ -132,12 +144,13 @@ class wpplugin:
 				resp = self.req.send(url,c=self.cookie)
 				if resp.status_code == 200 and resp.content != None:
 					if resp.url == url:
+						obj.readme = resp.url
 						wpplugin.out.more('Readme: {}'.format(resp.url))
-						#exit()
+						break
 		except Exception,e:
 			pass
 
-	def dbwpscan(self,plugin):
+	def dbwpscan(self,plugin,obj):
 		try:
 			url = "https://www.wpvulndb.com/api/v2/plugins/{}".format(plugin)
 			resp = requests.packages.urllib3.disable_warnings()
@@ -145,6 +158,7 @@ class wpplugin:
 			js = json.loads(resp._content,'UTF-8')
 			if js[plugin]:
 				if js[plugin]['vulnerabilities']:
+					obj.vulnerabilities = js[plugin]['vulnerabilities']
 					for x in xrange(len(js[plugin]['vulnerabilities'])):
 						wpplugin.out.more('Title: {}'.format(js[plugin]['vulnerabilities'][x]['title']))
 						if js[plugin]['vulnerabilities'][x]['references']['url']:

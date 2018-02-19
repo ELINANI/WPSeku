@@ -14,18 +14,20 @@ from lib import wphttp
 from lib import wpprint
 
 class wptheme:
-	
-	chk = wphttp.UCheck() 
+
+	chk = wphttp.UCheck()
 	out = wpprint.wpprint()
-	
-	def __init__(self,agent,proxy,redir,time,url,cookie):
+
+	def __init__(self,agent,proxy,redir,time,url,cookie,result):
 		self.url = url
+		self.result = result
 		self.cookie = cookie
 		self.agent = agent
 		self.req = wphttp.wphttp(
 			agent=agent,proxy=proxy,
 			redir=redir,time=time
 			)
+
 	def run(self):
 		wptheme.out.test('Passive enumerate themes..')
 		try:
@@ -33,37 +35,45 @@ class wptheme:
 			resp = self.req.send(url,c=self.cookie)
 			theme = re.findall(r'/wp-content/themes/(.+?)/',resp.content)
 			themes = []
+			self.result.themes = []
+
 			for th in theme:
 				if th not in themes:
 					themes.append(th)
 			if themes != []:
 				if len(themes) == 1:
 					wptheme.out.plus('Name: {}'.format(themes[0]))
+					obj = type('', (), {})()
+					obj.name = themes[0]
 					self.info(themes[0])
 					self.style(themes[0])
-					self.changelog(themes[0])
+					self.changelog(themes[0], obj)
 					self.fullpathdisc(themes[0])
 					self.license(themes[0])
 					self.listing(themes[0])
-					self.readme(themes[0])
-					self.dbwpscan(themes[0])
+					self.readme(themes[0], obj)
+					self.dbwpscan(themes[0], obj)
+					self.result.themes.append(vars(obj))
 
 				elif len(themes) > 1:
 					for theme in themes:
 						wptheme.out.plus('Name: {}'.format(theme))
+						obj = type('', (), {})()
+						obj.name = theme
 						self.info(theme)
 						self.style(theme)
-						self.changelog(theme)
+						self.changelog(theme, obj)
 						self.fullpathdisc(theme)
 						self.license(theme)
 						self.listing(theme)
-						self.readme(theme)
-						self.dbwpscan(theme)
+						self.readme(theme, obj)
+						self.dbwpscan(theme, obj)
+						self.result.themes.append(vars(obj))
 
-			elif themes == None:
+			else:
 				wptheme.out.warning('Not found themes..')
 		except Exception,e:
-			print e
+			pass
 
 	def info(self,theme):
 		try:
@@ -90,7 +100,7 @@ class wptheme:
 		except Exception,e:
 			pass
 
-	def changelog(self,theme):
+	def changelog(self,theme,obj):
 		try:
 			ch = ['changelog.txt','changelog.md','CHANGELOG.txt','CHANGELOG.md']
 			for pt in ch:
@@ -99,8 +109,9 @@ class wptheme:
 				resp = self.req.send(url,c=self.cookie)
 				if resp.status_code == 200 and resp.content != None:
 					if resp.url == url:
+						obj.changelog = resp.url
 						wptheme.out.more('Changelog: {}'.format(resp.url))
-						exit()
+						break
 		except Exception,e:
 			pass
 
@@ -118,7 +129,7 @@ class wptheme:
 					if resp.url == url:
 						if re.search('Fatal error',resp.content):
 							wptheme.out.more('Full Path Disclosure: {}'.format(resp.url))
-							exit()
+							break
 		except Exception,e:
 			pass
 
@@ -132,7 +143,7 @@ class wptheme:
 				if resp.status_code == 200 and resp.content != None:
 					if resp.url == url:
 						wptheme.out.more('License: {}'.format(resp.url))
-						exit()
+						break
 		except Exception,e:
 			pass
 
@@ -152,7 +163,7 @@ class wptheme:
 		except Exception,e:
 			pass
 
-	def readme(self,theme):
+	def readme(self,theme,obj):
 		try:
 			ch = ['readme.txt','readme.md','README.md','README.txt']
 			for pt in ch:
@@ -161,20 +172,21 @@ class wptheme:
 				resp = self.req.send(url,c=self.cookie)
 				if resp.status_code == 200 and resp.content != None:
 					if resp.url == url:
+						obj.readme = resp.url
 						wptheme.out.more('Readme: {}'.format(resp.url))
-						exit()
+						break
 		except Exception,e:
 			pass
 
-	def dbwpscan(self,theme):
+	def dbwpscan(self,theme,obj):
 		try:
 			url = "https://www.wpvulndb.com/api/v2/themes/{}".format(theme)
 			resp = requests.packages.urllib3.disable_warnings()
 			resp = requests.get(url,headers={'user-agent':self.agent},verify=False)
 			js = json.loads(resp._content,'UTF-8')
-			print js
 			if js[theme]:
 				if js[theme]['vulnerabilities']:
+					obj.vulnerabilities = js[theme]['vulnerabilities']
 					for x in xrange(len(js[theme]['vulnerabilities'])):
 						wptheme.out.more('Title: {}'.format(js[theme]['vulnerabilities'][x]['title']))
 						if js[theme]['vulnerabilities'][x]['references']['url']:

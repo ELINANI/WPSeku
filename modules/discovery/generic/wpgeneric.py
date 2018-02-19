@@ -5,7 +5,7 @@
 #
 # @url: https://github.com/m4ll0k/WPSeku
 # @author: Momo Outaadi (M4ll0k)
- 
+
 import wpfile
 import wpfpd
 import wpconfig
@@ -19,13 +19,13 @@ from lib import wpprint
 
 class wpgeneric:
 	@staticmethod
-	def run(agent,proxy,redir,time,url,cookie):
+	def run(agent,proxy,redir,time,url,cookie,result):
 		wpxmlrpc.wpxmlrpc(agent=agent,proxy=proxy,
 			redir=redir,time=time,url=url,cookie=cookie).run()
 		wpconfig.wpconfig(agent=agent,proxy=proxy,
 			redir=redir,time=time,url=url,cookie=cookie).run()
 		wpfpd.wpfpd(agent=agent,proxy=proxy,
-			redir=redir,time=time,url=url,cookie=cookie).run()	
+			redir=redir,time=time,url=url,cookie=cookie).run()
 		wpprint.wpprint().passs()
 		wpfile.wpfile(agent=agent,proxy=proxy,
 			redir=redir,time=time,url=url,cookie=cookie).run()
@@ -36,8 +36,8 @@ class wpgeneric:
 			redir=redir,time=time,url=url,cookie=cookie).run()
 		wpprint.wpprint().passs()
 		wprobots.wprobots(agent=agent,proxy=proxy,
-			redir=redir,time=time,url=url,cookie=cookie).run()
+			redir=redir,time=time,url=url,cookie=cookie,result=result).run()
 		wpprint.wpprint().passs()
 		wpversion.wpversion(agent=agent,proxy=proxy,
-			redir=redir,time=time,url=url,cookie=cookie).run()
+			redir=redir,time=time,url=url,cookie=cookie,result=result).run()
 		wpprint.wpprint().passs()

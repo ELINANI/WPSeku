@@ -10,8 +10,8 @@ import re
 from lib import wpprint
 
 class wpwaf:
-	def run(self,content):
-		waf = ""
+	def run(self,content,result):
+		result.firewall = waf = ""
 		try:
 			if re.search('/wp-content/plugins/wordfence/',content):
 				waf += "Wordfence Security"
@@ -28,6 +28,7 @@ class wpwaf:
 			elif re.search('/wp-content/plugins/6scan-protection/',content):
 				waf += "6Scan Security"
 			if waf != "":
+				result.firewall = waf
 				wpprint.wpprint().plus('Detect firewall: {}'.format(waf))
 		except Exception,e:
 			pass
