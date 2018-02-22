@@ -14,19 +14,22 @@ from lib import wphttp
 from lib import wpprint
 
 class wpversion:
-	
-	chk = wphttp.UCheck() 
+
+	chk = wphttp.UCheck()
 	out = wpprint.wpprint()
-	
-	def __init__(self,agent,proxy,redir,time,url,cookie):
+
+	def __init__(self,agent,proxy,redir,time,url,cookie,result):
 		self.url = url
 		self.agent = agent
+		self.result = result
 		self.cookie = cookie
 		self.req = wphttp.wphttp(
 			agent=agent,proxy=proxy,
 			redir=redir,time=time
 			)
+
 	def run(self):
+		self.result.version = ''
 		try:
 			url = wpversion.chk.path(self.url,'/wp-links-opml.php')
 			resp = self.req.send(url,c=self.cookie)
@@ -75,6 +78,7 @@ class wpversion:
 							pass
 
 	def dbwpscan(self,version):
+		self.result.version = version
 		try:
 			url = "https://www.wpvulndb.com/api/v2/wordpresses/{}".format(self.Version(version))
 			resp = requests.packages.urllib3.disable_warnings()
@@ -85,6 +89,7 @@ class wpversion:
 					wpversion.out.more('Release date: {}'.format(js[version]['release_date']))
 				if js[version]['vulnerabilities']:
 					for x in xrange(len(js[version]['vulnerabilities'])):
+						wpversion.out.more('')
 						wpversion.out.more('Title: {}'.format(js[version]['vulnerabilities'][x]['title']))
 						if js[version]['vulnerabilities'][x]['references']['url']:
 							for y in range(len(js[version]['vulnerabilities'][x]['references']['url'])):

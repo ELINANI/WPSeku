@@ -10,23 +10,26 @@ from lib import wphttp
 from lib import wpprint
 
 class wprobots:
-	
-	chk = wphttp.UCheck() 
+
+	chk = wphttp.UCheck()
 	out = wpprint.wpprint()
-	
-	def __init__(self,agent,proxy,redir,time,url,cookie):
+
+	def __init__(self,agent,proxy,redir,time,url,cookie,result):
 		self.url = url
+		self.result = result
 		self.cookie = cookie
 		self.req = wphttp.wphttp(
 			agent=agent,proxy=proxy,
 			redir=redir,time=time
 			)
+
 	def run(self):
 		try:
 			url = wprobots.chk.path(self.url,'/robots.txt')
 			resp = self.req.send(url,c=self.cookie)
 			if resp.status_code == 200 and resp._content != None:
 				if resp.url == url:
+					self.result.robots = resp.url
 					wprobots.out.plus('Robots available under: {}'.format(resp.url))
 					print "-------------------------\r\n{}\n-------------------------".format(resp._content)
 		except Exception,e:
